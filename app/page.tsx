@@ -1,11 +1,16 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 async function getStats() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/stats`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
+    const [total, activos, enReparacion, dadosDeBaja, porTipo] = await Promise.all([
+      prisma.equipo.count(),
+      prisma.equipo.count({ where: { estado: "ACTIVO" } }),
+      prisma.equipo.count({ where: { estado: "EN_REPARACION" } }),
+      prisma.equipo.count({ where: { estado: "DADO_DE_BAJA" } }),
+      prisma.equipo.groupBy({ by: ["tipo"], _count: { tipo: true }, orderBy: { _count: { tipo: "desc" } } }),
+    ]);
+    return { total, activos, enReparacion, dadosDeBaja, porTipo };
   } catch {
     return null;
   }
