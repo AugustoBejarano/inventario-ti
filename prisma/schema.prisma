@@ -8,21 +8,52 @@ datasource db {
 }
 
 model Equipo {
-  id              String   @id @default(cuid())
+  id              String            @id @default(cuid())
   tipo            String
   marca           String?
   modelo          String?
-  numeroSerie     String?  @unique
+  numeroSerie     String?           @unique
   usuarioAsignado String?
   ubicacion       String?
-  estado          Estado   @default(ACTIVO)
+  sucursal        Sucursal?
+  estado          Estado            @default(ACTIVO)
   notas           String?
-  creadoEn        DateTime @default(now())
-  actualizadoEn   DateTime @updatedAt
+  creadoEn        DateTime          @default(now())
+  actualizadoEn   DateTime          @updatedAt
+  mantenimientos  Mantenimiento[]
+  historial       HistorialCambio[]
+}
+
+model Mantenimiento {
+  id          String   @id @default(cuid())
+  equipoId    String
+  equipo      Equipo   @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  tipo        String
+  descripcion String
+  tecnico     String?
+  costo       Float?
+  fecha       DateTime @default(now())
+  creadoEn    DateTime @default(now())
+}
+
+model HistorialCambio {
+  id            String   @id @default(cuid())
+  equipoId      String
+  equipo        Equipo   @relation(fields: [equipoId], references: [id], onDelete: Cascade)
+  campo         String
+  valorAnterior String?
+  valorNuevo    String?
+  creadoEn      DateTime @default(now())
 }
 
 enum Estado {
   ACTIVO
   EN_REPARACION
   DADO_DE_BAJA
+}
+
+enum Sucursal {
+  CORDOBA
+  MONTE_MAIZ
+  BUENOS_AIRES
 }

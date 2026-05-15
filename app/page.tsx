@@ -3,16 +3,21 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+const SUCURSAL_LABEL: Record<string, string> = {
+  CORDOBA: "Córdoba", MONTE_MAIZ: "Monte Maíz", BUENOS_AIRES: "Buenos Aires",
+};
+
 async function getStats() {
   try {
-    const [total, activos, enReparacion, dadosDeBaja, porTipo] = await Promise.all([
+    const [total, activos, enReparacion, dadosDeBaja, porTipo, porSucursal] = await Promise.all([
       prisma.equipo.count(),
       prisma.equipo.count({ where: { estado: "ACTIVO" } }),
       prisma.equipo.count({ where: { estado: "EN_REPARACION" } }),
       prisma.equipo.count({ where: { estado: "DADO_DE_BAJA" } }),
       prisma.equipo.groupBy({ by: ["tipo"], _count: { tipo: true }, orderBy: { _count: { tipo: "desc" } } }),
+      prisma.equipo.groupBy({ by: ["sucursal"], _count: { sucursal: true }, orderBy: { _count: { sucursal: "desc" } } }),
     ]);
-    return { total, activos, enReparacion, dadosDeBaja, porTipo };
+    return { total, activos, enReparacion, dadosDeBaja, porTipo, porSucursal };
   } catch {
     return null;
   }
@@ -35,9 +40,7 @@ export default async function Dashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500 mt-1">Resumen del inventario de hardware</p>
         </div>
-        <Link href="/inventario/nuevo" className="btn-primary">
-          + Agregar equipo
-        </Link>
+        <Link href="/inventario/nuevo" className="btn-primary">+ Agregar equipo</Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -54,25 +57,53 @@ export default async function Dashboard() {
         ))}
       </div>
 
-      {stats?.porTipo && stats.porTipo.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Equipos por tipo</h2>
-          <div className="space-y-3">
-            {stats.porTipo.map((item: { tipo: string; _count: { tipo: number } }) => {
-              const pct = stats.total > 0 ? Math.round((item._count.tipo / stats.total) * 100) : 0;
-              return (
-                <div key={item.tipo}>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-gray-700 font-medium">{item.tipo}</span>
-                    <span className="text-gray-500">{item._count.tipo} ({pct}%)</span>
-                  </div>
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+      {stats && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {stats.porTipo.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Por tipo</h2>
+              <div className="space-y-3">
+                {stats.porTipo.map((item: { tipo: string; _count: { tipo: number } }) => {
+                  const pct = stats.total > 0 ? Math.round((item._count.tipo / stats.total) * 100) : 0;
+                  return (
+                    <div key={item.tipo}>
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-700 font-medium">{item.tipo}</span>
+                        <span className="text-gray-500">{item._count.tipo} ({pct}%)</span>
+                      </div>
+                      <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {stats.porSucursal.filter((s: { sucursal: string | null }) => s.sucursal).length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Por sucursal</h2>
+              <div className="space-y-3">
+                {stats.porSucursal
+                  .filter((s: { sucursal: string | null }) => s.sucursal)
+                  .map((item: { sucursal: string | null; _count: { sucursal: number } }) => {
+                    const pct = stats.total > 0 ? Math.round((item._count.sucursal / stats.total) * 100) : 0;
+                    return (
+                      <div key={item.sucursal}>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-700 font-medium">{SUCURSAL_LABEL[item.sucursal!] ?? item.sucursal}</span>
+                          <span className="text-gray-500">{item._count.sucursal} ({pct}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

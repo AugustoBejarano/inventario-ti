@@ -9,6 +9,11 @@ const ESTADOS = [
   { value: "EN_REPARACION", label: "En reparación" },
   { value: "DADO_DE_BAJA", label: "Dado de baja" },
 ];
+const SUCURSALES = [
+  { value: "CORDOBA", label: "Córdoba" },
+  { value: "MONTE_MAIZ", label: "Monte Maíz" },
+  { value: "BUENOS_AIRES", label: "Buenos Aires" },
+];
 
 interface Equipo {
   id?: string;
@@ -18,6 +23,7 @@ interface Equipo {
   numeroSerie: string;
   usuarioAsignado: string;
   ubicacion: string;
+  sucursal: string;
   estado: string;
   notas: string;
 }
@@ -33,6 +39,7 @@ export default function EquipoForm({ equipo }: { equipo?: Equipo }) {
     numeroSerie: equipo?.numeroSerie ?? "",
     usuarioAsignado: equipo?.usuarioAsignado ?? "",
     ubicacion: equipo?.ubicacion ?? "",
+    sucursal: equipo?.sucursal ?? "",
     estado: equipo?.estado ?? "ACTIVO",
     notas: equipo?.notas ?? "",
   });
@@ -60,7 +67,11 @@ export default function EquipoForm({ equipo }: { equipo?: Equipo }) {
     });
 
     if (res.ok) {
-      router.push("/inventario");
+      if (isEdit) {
+        router.push(`/inventario/${equipo!.id}`);
+      } else {
+        router.push("/inventario");
+      }
       router.refresh();
     } else {
       const data = await res.json();
@@ -113,7 +124,15 @@ export default function EquipoForm({ equipo }: { equipo?: Equipo }) {
           <input name="usuarioAsignado" value={form.usuarioAsignado} onChange={handleChange} placeholder="ej. Juan Pérez" className="input-field" />
         </div>
 
-        <div className="md:col-span-2">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+          <select name="sucursal" value={form.sucursal} onChange={handleChange} className="input-field">
+            <option value="">Sin sucursal</option>
+            {SUCURSALES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+          </select>
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
           <input name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="ej. Oficina 3 - Piso 2" className="input-field" />
         </div>

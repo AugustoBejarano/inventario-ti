@@ -21,7 +21,7 @@ export default async function EditarEquipoPage({ params }: { params: Promise<{ i
         <p className="text-gray-500 mt-1">{equipo.tipo} — {[equipo.marca, equipo.modelo].filter(Boolean).join(" ") || "Sin nombre"}</p>
       </div>
       <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <EquipoForm equipo={{ ...equipo, marca: equipo.marca ?? "", modelo: equipo.modelo ?? "", numeroSerie: equipo.numeroSerie ?? "", usuarioAsignado: equipo.usuarioAsignado ?? "", ubicacion: equipo.ubicacion ?? "", notas: equipo.notas ?? "" }} />
+        <EquipoForm equipo={{ ...equipo, marca: equipo.marca ?? "", modelo: equipo.modelo ?? "", numeroSerie: equipo.numeroSerie ?? "", usuarioAsignado: equipo.usuarioAsignado ?? "", ubicacion: equipo.ubicacion ?? "", notas: equipo.notas ?? "", sucursal: equipo.sucursal ?? "" }} />
       </div>
     </div>
   );
