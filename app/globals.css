@@ -1,17 +1,17 @@
 @import "tailwindcss";
 
-/* Override de la paleta azul de Tailwind con los colores corporativos Boiero */
+/* Paleta corporativa Boiero — Azul Acero */
 :root {
-  --color-blue-50:  #EEF4FB;
-  --color-blue-100: #D4E5F5;
-  --color-blue-200: #AACBEC;
-  --color-blue-300: #7AACE0;
-  --color-blue-400: #4B8DD4;
-  --color-blue-500: #2275C4;
-  --color-blue-600: #1B67B2;
-  --color-blue-700: #155499;
-  --color-blue-800: #104080;
-  --color-blue-900: #0B2D5E;
+  --color-blue-50:  #EAF0F8;
+  --color-blue-100: #C8D9EE;
+  --color-blue-200: #A0BDDF;
+  --color-blue-300: #78A1CF;
+  --color-blue-400: #4F83B8;
+  --color-blue-500: #254E80;
+  --color-blue-600: #1E3A5F;
+  --color-blue-700: #162C48;
+  --color-blue-800: #0E1E32;
+  --color-blue-900: #06101B;
 
   --background: #f9fafb;
   --foreground: #1a1a1a;
@@ -26,7 +26,7 @@ body {
 
 .input-field {
   @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors bg-white;
-  --tw-ring-color: #1B67B2;
+  --tw-ring-color: #1E3A5F;
 }
 
 .btn-primary {
@@ -34,7 +34,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 0.5rem;
-  background-color: #1B67B2;
+  background-color: #1E3A5F;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
@@ -42,11 +42,10 @@ body {
   transition: background-color 0.15s ease;
   cursor: pointer;
 }
-.btn-primary:hover { background-color: #155499; }
-.btn-primary:focus { outline: 2px solid #1B67B2; outline-offset: 2px; }
+.btn-primary:hover { background-color: #162C48; }
+.btn-primary:focus { outline: 2px solid #1E3A5F; outline-offset: 2px; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
   @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
-  --tw-ring-color: #1B67B2;
 }
