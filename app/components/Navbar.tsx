@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
@@ -17,14 +18,9 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
-                </svg>
-              </div>
-              <span className="font-semibold text-gray-900 text-lg">Inventario TI</span>
-            </div>
+            <Link href="/">
+              <Image src="/logo-boiero.png" alt="Boiero" width={140} height={46} className="h-9 w-auto" priority />
+            </Link>
 
             <div className="flex items-center gap-1">
               <Link
@@ -44,14 +40,24 @@ export default function Navbar() {
                 Inventario
               </Link>
               {esAdmin && (
-                <Link
-                  href="/admin/usuarios"
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    pathname.startsWith("/admin") ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
-                  }`}
-                >
-                  Usuarios
-                </Link>
+                <>
+                  <Link
+                    href="/admin/auditoria"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      pathname === "/admin/auditoria" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    Auditoría
+                  </Link>
+                  <Link
+                    href="/admin/usuarios"
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      pathname === "/admin/usuarios" ? "bg-blue-50 text-blue-700" : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    Usuarios
+                  </Link>
+                </>
               )}
             </div>
           </div>

@@ -55,6 +55,18 @@ model User {
   creadoEn DateTime @default(now())
 }
 
+model AuditLog {
+  id            String   @id @default(cuid())
+  accion        Accion
+  entidad       String
+  entidadId     String
+  entidadNombre String?
+  detalle       String?
+  usuarioId     String?
+  usuarioNombre String?
+  creadoEn      DateTime @default(now())
+}
+
 enum Estado {
   ACTIVO
   EN_REPARACION
@@ -70,4 +82,10 @@ enum Sucursal {
 enum Role {
   ADMIN
   LECTOR
+}
+
+enum Accion {
+  CREAR
+  EDITAR
+  ELIMINAR
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function SetupPage() {
@@ -48,13 +49,8 @@ export default function SetupPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center">
-            <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
-            </svg>
-          </div>
-          <span className="text-xl font-bold text-gray-900">Inventario TI</span>
+        <div className="flex justify-center mb-8">
+          <Image src="/logo-boiero.png" alt="Boiero" width={180} height={60} className="h-12 w-auto" priority />
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
@@ -81,7 +77,7 @@ export default function SetupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-field w-full"
-                placeholder="admin@empresa.com"
+                placeholder="admin@boiero.com"
                 required
               />
             </div>

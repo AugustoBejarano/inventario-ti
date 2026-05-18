@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
+import { registrarAuditoria } from "@/lib/auditoria";
 
 const CAMPOS_LABEL: Record<string, string> = {
   tipo: "Tipo", marca: "Marca", modelo: "Modelo", numeroSerie: "N° Serie",
@@ -22,7 +23,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, session } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
@@ -59,14 +60,38 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     ...(cambios.length > 0 ? [prisma.historialCambio.createMany({ data: cambios })] : []),
   ]);
 
+  await registrarAuditoria({
+    accion: "EDITAR",
+    entidad: "Equipo",
+    entidadId: id,
+    entidadNombre: [body.marca, body.modelo, body.tipo].filter(Boolean).join(" "),
+    detalle: cambios.length > 0 ? { cambios: cambios.map((c) => `${c.campo}: "${c.valorAnterior}" → "${c.valorNuevo}"`) } : undefined,
+    usuarioId: session!.user.id,
+    usuarioNombre: session!.user.name,
+  });
+
   return NextResponse.json(equipo);
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, session } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
+
+  const equipo = await prisma.equipo.findUnique({ where: { id } });
+  if (!equipo) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
+
   await prisma.equipo.delete({ where: { id } });
+
+  await registrarAuditoria({
+    accion: "ELIMINAR",
+    entidad: "Equipo",
+    entidadId: id,
+    entidadNombre: [equipo.marca, equipo.modelo, equipo.tipo].filter(Boolean).join(" "),
+    usuarioId: session!.user.id,
+    usuarioNombre: session!.user.name,
+  });
+
   return NextResponse.json({ ok: true });
 }

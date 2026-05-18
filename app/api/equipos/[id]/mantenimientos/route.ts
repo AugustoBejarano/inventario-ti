@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireAdmin } from "@/lib/session";
+import { registrarAuditoria } from "@/lib/auditoria";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, session } = await requireAdmin();
   if (error) return error;
 
   const { id } = await params;
@@ -20,11 +21,23 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     },
   });
 
+  const equipo = await prisma.equipo.findUnique({ where: { id }, select: { marca: true, modelo: true, tipo: true } });
+
+  await registrarAuditoria({
+    accion: "CREAR",
+    entidad: "Mantenimiento",
+    entidadId: mantenimiento.id,
+    entidadNombre: `${body.tipo} en ${[equipo?.marca, equipo?.modelo, equipo?.tipo].filter(Boolean).join(" ")}`,
+    detalle: { descripcion: body.descripcion, tecnico: body.tecnico, costo: body.costo },
+    usuarioId: session!.user.id,
+    usuarioNombre: session!.user.name,
+  });
+
   return NextResponse.json(mantenimiento, { status: 201 });
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const { error } = await requireAdmin();
+  const { error, session } = await requireAdmin();
   if (error) return error;
 
   const { id: equipoId } = await params;
@@ -32,6 +45,20 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
   const mantenimientoId = searchParams.get("mid");
   if (!mantenimientoId) return NextResponse.json({ error: "Falta id" }, { status: 400 });
 
+  const mantenimiento = await prisma.mantenimiento.findUnique({ where: { id: mantenimientoId } });
+
   await prisma.mantenimiento.delete({ where: { id: mantenimientoId, equipoId } });
+
+  const equipo = await prisma.equipo.findUnique({ where: { id: equipoId }, select: { marca: true, modelo: true, tipo: true } });
+
+  await registrarAuditoria({
+    accion: "ELIMINAR",
+    entidad: "Mantenimiento",
+    entidadId: mantenimientoId,
+    entidadNombre: `${mantenimiento?.tipo ?? "Mantenimiento"} en ${[equipo?.marca, equipo?.modelo, equipo?.tipo].filter(Boolean).join(" ")}`,
+    usuarioId: session!.user.id,
+    usuarioNombre: session!.user.name,
+  });
+
   return NextResponse.json({ ok: true });
 }

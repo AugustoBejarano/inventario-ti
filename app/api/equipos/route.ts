@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { Estado, Sucursal } from "@prisma/client";
 import { requireAdmin } from "@/lib/session";
+import { registrarAuditoria } from "@/lib/auditoria";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -32,7 +33,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { error } = await requireAdmin();
+  const { error, session } = await requireAdmin();
   if (error) return error;
 
   const body = await request.json();
@@ -49,6 +50,15 @@ export async function POST(request: NextRequest) {
       estado: body.estado || "ACTIVO",
       notas: body.notas || null,
     },
+  });
+
+  await registrarAuditoria({
+    accion: "CREAR",
+    entidad: "Equipo",
+    entidadId: equipo.id,
+    entidadNombre: [equipo.marca, equipo.modelo, equipo.tipo].filter(Boolean).join(" "),
+    usuarioId: session!.user.id,
+    usuarioNombre: session!.user.name,
   });
 
   return NextResponse.json(equipo, { status: 201 });
