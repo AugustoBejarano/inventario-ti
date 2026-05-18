@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/session";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -20,6 +24,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   const { id: equipoId } = await params;
   const { searchParams } = new URL(request.url);
   const mantenimientoId = searchParams.get("mid");

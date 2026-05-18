@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import EstadoBadge from "../components/EstadoBadge";
 import SucursalBadge from "../components/SucursalBadge";
 
@@ -32,6 +33,9 @@ const SUCURSALES = [
 ];
 
 export default function InventarioPage() {
+  const { data: session } = useSession();
+  const esAdmin = session?.user?.role === "ADMIN";
+
   const [equipos, setEquipos] = useState<Equipo[]>([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
@@ -97,7 +101,9 @@ export default function InventarioPage() {
           <button onClick={exportar} disabled={exportando} className="btn-secondary">
             {exportando ? "Exportando..." : "↓ Excel"}
           </button>
-          <Link href="/inventario/nuevo" className="btn-primary">+ Agregar equipo</Link>
+          {esAdmin && (
+            <Link href="/inventario/nuevo" className="btn-primary">+ Agregar equipo</Link>
+          )}
         </div>
       </div>
 
@@ -128,7 +134,9 @@ export default function InventarioPage() {
       ) : equipos.length === 0 ? (
         <div className="text-center py-16 bg-white rounded-xl border border-gray-200">
           <p className="text-gray-500 text-lg">No se encontraron equipos</p>
-          <Link href="/inventario/nuevo" className="btn-primary mt-4 inline-block">Agregar el primero</Link>
+          {esAdmin && (
+            <Link href="/inventario/nuevo" className="btn-primary mt-4 inline-block">Agregar el primero</Link>
+          )}
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -161,16 +169,20 @@ export default function InventarioPage() {
                         <Link href={`/inventario/${equipo.id}`} className="text-gray-600 hover:text-gray-900 text-xs font-medium">
                           Ver
                         </Link>
-                        <Link href={`/inventario/${equipo.id}/editar`} className="text-blue-600 hover:text-blue-800 text-xs font-medium">
-                          Editar
-                        </Link>
-                        <button
-                          onClick={() => eliminar(equipo.id)}
-                          disabled={eliminando === equipo.id}
-                          className="text-red-500 hover:text-red-700 text-xs font-medium disabled:opacity-50"
-                        >
-                          Eliminar
-                        </button>
+                        {esAdmin && (
+                          <>
+                            <Link href={`/inventario/${equipo.id}/editar`} className="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                              Editar
+                            </Link>
+                            <button
+                              onClick={() => eliminar(equipo.id)}
+                              disabled={eliminando === equipo.id}
+                              className="text-red-500 hover:text-red-700 text-xs font-medium disabled:opacity-50"
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

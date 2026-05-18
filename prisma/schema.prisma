@@ -46,6 +46,15 @@ model HistorialCambio {
   creadoEn      DateTime @default(now())
 }
 
+model User {
+  id       String   @id @default(cuid())
+  email    String   @unique
+  name     String
+  password String
+  role     Role     @default(LECTOR)
+  creadoEn DateTime @default(now())
+}
+
 enum Estado {
   ACTIVO
   EN_REPARACION
@@ -56,4 +65,9 @@ enum Sucursal {
   CORDOBA
   MONTE_MAIZ
   BUENOS_AIRES
+}
+
+enum Role {
+  ADMIN
+  LECTOR
 }

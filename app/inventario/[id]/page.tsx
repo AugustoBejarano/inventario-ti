@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import EstadoBadge from "../../components/EstadoBadge";
 import SucursalBadge from "../../components/SucursalBadge";
 import MantenimientoForm from "../../components/MantenimientoForm";
@@ -43,6 +44,9 @@ interface Equipo {
 export default function FichaEquipoPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { data: session } = useSession();
+  const esAdmin = session?.user?.role === "ADMIN";
+
   const [equipo, setEquipo] = useState<Equipo | null>(null);
   const [cargando, setCargando] = useState(true);
   const [mostrarFormMant, setMostrarFormMant] = useState(false);
@@ -89,12 +93,18 @@ export default function FichaEquipoPage() {
             <SucursalBadge sucursal={equipo.sucursal} />
           </div>
         </div>
-        <div className="flex gap-2 shrink-0">
-          <Link href={`/inventario/${id}/editar`} className="btn-secondary">Editar</Link>
-          <button onClick={eliminar} disabled={eliminando} className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50">
-            Eliminar
-          </button>
-        </div>
+        {esAdmin && (
+          <div className="flex gap-2 shrink-0">
+            <Link href={`/inventario/${id}/editar`} className="btn-secondary">Editar</Link>
+            <button
+              onClick={eliminar}
+              disabled={eliminando}
+              className="inline-flex items-center justify-center rounded-lg border border-red-200 bg-white px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+            >
+              Eliminar
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Datos del equipo */}
@@ -130,7 +140,7 @@ export default function FichaEquipoPage() {
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-gray-900">Mantenimientos ({equipo.mantenimientos.length})</h2>
-          {!mostrarFormMant && (
+          {esAdmin && !mostrarFormMant && (
             <button onClick={() => setMostrarFormMant(true)} className="btn-primary text-xs px-3 py-1.5">
               + Registrar
             </button>
@@ -162,7 +172,9 @@ export default function FichaEquipoPage() {
                   </div>
                   <p className="text-sm text-gray-700 mt-1">{m.descripcion}</p>
                 </div>
-                <button onClick={() => eliminarMantenimiento(m.id)} className="text-red-400 hover:text-red-600 text-xs shrink-0">Eliminar</button>
+                {esAdmin && (
+                  <button onClick={() => eliminarMantenimiento(m.id)} className="text-red-400 hover:text-red-600 text-xs shrink-0">Eliminar</button>
+                )}
               </div>
             ))}
           </div>

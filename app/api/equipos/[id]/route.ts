@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/session";
 
 const CAMPOS_LABEL: Record<string, string> = {
   tipo: "Tipo", marca: "Marca", modelo: "Modelo", numeroSerie: "N° Serie",
@@ -21,6 +22,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   const { id } = await params;
   const body = await request.json();
 
@@ -59,6 +63,9 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error } = await requireAdmin();
+  if (error) return error;
+
   const { id } = await params;
   await prisma.equipo.delete({ where: { id } });
   return NextResponse.json({ ok: true });
