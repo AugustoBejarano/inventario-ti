@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-@theme {
+/* Override de la paleta azul de Tailwind con los colores corporativos Boiero */
+:root {
   --color-blue-50:  #EEF4FB;
   --color-blue-100: #D4E5F5;
   --color-blue-200: #AACBEC;
@@ -11,9 +12,7 @@
   --color-blue-700: #155499;
   --color-blue-800: #104080;
   --color-blue-900: #0B2D5E;
-}
 
-:root {
   --background: #f9fafb;
   --foreground: #1a1a1a;
   --font-sans: var(--font-geist-sans);
@@ -26,13 +25,28 @@ body {
 }
 
 .input-field {
-  @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors bg-white;
+  @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors bg-white;
+  --tw-ring-color: #1B67B2;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  background-color: #1B67B2;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
 }
+.btn-primary:hover { background-color: #155499; }
+.btn-primary:focus { outline: 2px solid #1B67B2; outline-offset: 2px; }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors;
+  @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
+  --tw-ring-color: #1B67B2;
 }

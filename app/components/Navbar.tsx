@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 
@@ -19,7 +18,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-6">
             <Link href="/">
-              <Image src="/logo-boiero.png" alt="Boiero" width={140} height={46} className="h-9 w-auto" priority />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-boiero.png" alt="Boiero" className="h-9 w-auto" />
             </Link>
 
             <div className="flex items-center gap-1">

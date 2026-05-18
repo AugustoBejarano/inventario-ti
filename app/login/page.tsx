@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -36,7 +35,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="flex justify-center mb-8">
-          <Image src="/logo-boiero.png" alt="Boiero" width={180} height={60} className="h-12 w-auto" priority />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo-boiero.png" alt="Boiero" className="h-12 w-auto" />
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
