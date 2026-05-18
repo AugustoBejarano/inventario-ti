@@ -7,14 +7,14 @@ import SessionProviderWrapper from "./components/SessionProviderWrapper";
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Inventario TI",
+  title: "Inventario TI — Boiero",
   description: "Gestión de inventario de hardware de TI",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${geist.variable} h-full antialiased`}>
-      <body className="min-h-full bg-gray-50 flex flex-col">
+      <body className="min-h-full bg-[#0B1829] flex flex-col text-[#E8F2FA]">
         <SessionProviderWrapper>
           <Navbar />
           <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -1,9 +1,9 @@
 "use client";
 
 const colores: Record<string, string> = {
-  ACTIVO: "bg-green-100 text-green-800",
-  EN_REPARACION: "bg-yellow-100 text-yellow-800",
-  DADO_DE_BAJA: "bg-red-100 text-red-800",
+  ACTIVO:        "bg-emerald-900/50 text-emerald-400 border border-emerald-700/50",
+  EN_REPARACION: "bg-amber-900/50 text-amber-400 border border-amber-700/50",
+  DADO_DE_BAJA:  "bg-red-900/50 text-red-400 border border-red-700/50",
 };
 
 const etiquetas: Record<string, string> = {
@@ -14,7 +14,7 @@ const etiquetas: Record<string, string> = {
 
 export default function EstadoBadge({ estado }: { estado: string }) {
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colores[estado] ?? "bg-gray-100 text-gray-800"}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${colores[estado] ?? "bg-slate-800 text-slate-400"}`}>
       {etiquetas[estado] ?? estado}
     </span>
   );

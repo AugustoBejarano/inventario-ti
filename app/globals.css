@@ -1,21 +1,33 @@
 @import "tailwindcss";
 
-/* Paleta corporativa Boiero — Azul Acero */
+/* ── Paleta Dark Navy Boiero ───────────────────────────────────── */
 :root {
+  /* Escala de grises → colores oscuros navy (afecta todas las clases bg-gray-* text-gray-* etc.) */
+  --color-gray-50:  #0B1829;
+  --color-gray-100: #162035;
+  --color-gray-200: #243D5E;
+  --color-gray-300: #2E4D70;
+  --color-gray-400: #5A7A9A;
+  --color-gray-500: #7B9AB5;
+  --color-gray-600: #9BBAD0;
+  --color-gray-700: #B5CDE0;
+  --color-gray-800: #CCDDE8;
+  --color-gray-900: #E8F2FA;
+
+  /* Azul corporativo Boiero — Acero */
   --color-blue-50:  #EAF0F8;
   --color-blue-100: #C8D9EE;
   --color-blue-200: #A0BDDF;
-  --color-blue-300: #78A1CF;
-  --color-blue-400: #4F83B8;
-  --color-blue-500: #254E80;
+  --color-blue-300: #6B9FCC;
+  --color-blue-400: #4B83B8;
+  --color-blue-500: #2A6399;
   --color-blue-600: #1E3A5F;
   --color-blue-700: #162C48;
   --color-blue-800: #0E1E32;
   --color-blue-900: #06101B;
 
-  --background: #f9fafb;
-  --foreground: #1a1a1a;
-  --font-sans: var(--font-geist-sans);
+  --background: #0B1829;
+  --foreground: #E8F2FA;
 }
 
 body {
@@ -24,10 +36,31 @@ body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
 
-.input-field {
-  @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent transition-colors bg-white;
-  --tw-ring-color: #1E3A5F;
+/* Tarjeta oscura (reemplaza bg-white en toda la app) */
+.card {
+  background-color: #1A2D47;
+  border: 1px solid #243D5E;
+  border-radius: 0.75rem;
 }
+
+.input-field {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #2E4D70;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #E8F2FA;
+  background-color: #162035;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.input-field::placeholder { color: #5A7A9A; }
+.input-field:focus {
+  border-color: #2A6399;
+  box-shadow: 0 0 0 2px #1E3A5F80;
+}
+/* Opciones del select en dark */
+.input-field option { background-color: #162035; color: #E8F2FA; }
 
 .btn-primary {
   display: inline-flex;
@@ -38,14 +71,28 @@ body {
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: white;
+  color: #E8F2FA;
   transition: background-color 0.15s ease;
   cursor: pointer;
+  border: 1px solid #2A6399;
 }
-.btn-primary:hover { background-color: #162C48; }
-.btn-primary:focus { outline: 2px solid #1E3A5F; outline-offset: 2px; }
+.btn-primary:hover  { background-color: #254E80; }
+.btn-primary:focus  { outline: 2px solid #2A6399; outline-offset: 2px; }
 .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px solid #2E4D70;
+  background-color: #162035;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #B5CDE0;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
 }
+.btn-secondary:hover { background-color: #1E3A5F; color: #E8F2FA; }
+.btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; }

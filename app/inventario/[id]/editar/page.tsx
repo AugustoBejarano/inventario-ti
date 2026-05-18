@@ -17,10 +17,10 @@ export default async function EditarEquipoPage({ params }: { params: Promise<{ i
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Editar equipo</h1>
-        <p className="text-gray-500 mt-1">{equipo.tipo} — {[equipo.marca, equipo.modelo].filter(Boolean).join(" ") || "Sin nombre"}</p>
+        <h1 className="text-2xl font-bold text-slate-100">Editar equipo</h1>
+        <p className="text-slate-400 mt-1">{equipo.tipo} — {[equipo.marca, equipo.modelo].filter(Boolean).join(" ") || "Sin nombre"}</p>
       </div>
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
         <EquipoForm equipo={{ ...equipo, marca: equipo.marca ?? "", modelo: equipo.modelo ?? "", numeroSerie: equipo.numeroSerie ?? "", usuarioAsignado: equipo.usuarioAsignado ?? "", ubicacion: equipo.ubicacion ?? "", notas: equipo.notas ?? "", sucursal: equipo.sucursal ?? "" }} />
       </div>
     </div>

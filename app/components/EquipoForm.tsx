@@ -67,11 +67,8 @@ export default function EquipoForm({ equipo }: { equipo?: Equipo }) {
     });
 
     if (res.ok) {
-      if (isEdit) {
-        router.push(`/inventario/${equipo!.id}`);
-      } else {
-        router.push("/inventario");
-      }
+      if (isEdit) router.push(`/inventario/${equipo!.id}`);
+      else router.push("/inventario");
       router.refresh();
     } else {
       const data = await res.json();
@@ -80,65 +77,59 @@ export default function EquipoForm({ equipo }: { equipo?: Equipo }) {
     }
   };
 
+  const label = "block text-sm font-medium text-slate-400 mb-1";
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        <div className="bg-red-900/30 border border-red-700/50 text-red-400 px-4 py-3 rounded-lg text-sm">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tipo *</label>
+          <label className={label}>Tipo *</label>
           <select name="tipo" value={form.tipo} onChange={handleChange} className="input-field">
             <option value="">Seleccioná un tipo</option>
             {TIPOS.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <label className={label}>Estado</label>
           <select name="estado" value={form.estado} onChange={handleChange} className="input-field">
             {ESTADOS.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
           </select>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Marca</label>
+          <label className={label}>Marca</label>
           <input name="marca" value={form.marca} onChange={handleChange} placeholder="ej. HP, Dell, Lenovo" className="input-field" />
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Modelo</label>
+          <label className={label}>Modelo</label>
           <input name="modelo" value={form.modelo} onChange={handleChange} placeholder="ej. EliteBook 840" className="input-field" />
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Número de serie</label>
+          <label className={label}>Número de serie</label>
           <input name="numeroSerie" value={form.numeroSerie} onChange={handleChange} placeholder="ej. CZC12345678" className="input-field" />
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Usuario asignado</label>
+          <label className={label}>Usuario asignado</label>
           <input name="usuarioAsignado" value={form.usuarioAsignado} onChange={handleChange} placeholder="ej. Juan Pérez" className="input-field" />
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Sucursal</label>
+          <label className={label}>Sucursal</label>
           <select name="sucursal" value={form.sucursal} onChange={handleChange} className="input-field">
             <option value="">Sin sucursal</option>
             {SUCURSALES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
-
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+          <label className={label}>Ubicación</label>
           <input name="ubicacion" value={form.ubicacion} onChange={handleChange} placeholder="ej. Oficina 3 - Piso 2" className="input-field" />
         </div>
-
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+          <label className={label}>Notas</label>
           <textarea name="notas" value={form.notas} onChange={handleChange} rows={3} placeholder="Observaciones adicionales..." className="input-field resize-none" />
         </div>
       </div>

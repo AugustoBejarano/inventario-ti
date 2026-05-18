@@ -27,31 +27,31 @@ export default async function Dashboard() {
   const stats = await getStats();
 
   const tarjetas = [
-    { label: "Total equipos", valor: stats?.total ?? 0, color: "bg-blue-600", icono: "🖥️" },
-    { label: "Activos", valor: stats?.activos ?? 0, color: "bg-green-600", icono: "✅" },
-    { label: "En reparación", valor: stats?.enReparacion ?? 0, color: "bg-yellow-500", icono: "🔧" },
-    { label: "Dados de baja", valor: stats?.dadosDeBaja ?? 0, color: "bg-red-500", icono: "❌" },
+    { label: "Total equipos",  valor: stats?.total ?? 0,         color: "bg-[#1E3A5F] border-[#2A6399]",  icono: "🖥️" },
+    { label: "Activos",        valor: stats?.activos ?? 0,       color: "bg-emerald-900/60 border-emerald-700/50", icono: "✅" },
+    { label: "En reparación",  valor: stats?.enReparacion ?? 0,  color: "bg-amber-900/60 border-amber-700/50",    icono: "🔧" },
+    { label: "Dados de baja",  valor: stats?.dadosDeBaja ?? 0,   color: "bg-red-900/60 border-red-700/50",        icono: "❌" },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-500 mt-1">Resumen del inventario de hardware</p>
+          <h1 className="text-2xl font-bold text-slate-100">Dashboard</h1>
+          <p className="text-slate-400 mt-1">Resumen del inventario de hardware</p>
         </div>
         <Link href="/inventario/nuevo" className="btn-primary">+ Agregar equipo</Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {tarjetas.map((t) => (
-          <div key={t.label} className="bg-white rounded-xl border border-gray-200 p-6 flex items-center gap-4">
-            <div className={`${t.color} rounded-lg w-12 h-12 flex items-center justify-center text-xl`}>
+          <div key={t.label} className={`rounded-xl border p-6 flex items-center gap-4 ${t.color}`}>
+            <div className="w-12 h-12 rounded-lg bg-black/20 flex items-center justify-center text-xl">
               {t.icono}
             </div>
             <div>
-              <p className="text-3xl font-bold text-gray-900">{t.valor}</p>
-              <p className="text-sm text-gray-500">{t.label}</p>
+              <p className="text-3xl font-bold text-slate-100">{t.valor}</p>
+              <p className="text-sm text-slate-400">{t.label}</p>
             </div>
           </div>
         ))}
@@ -60,18 +60,18 @@ export default async function Dashboard() {
       {stats && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {stats.porTipo.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Por tipo</h2>
+            <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">Por tipo</h2>
               <div className="space-y-3">
                 {stats.porTipo.map((item: { tipo: string; _count: { tipo: number } }) => {
                   const pct = stats.total > 0 ? Math.round((item._count.tipo / stats.total) * 100) : 0;
                   return (
                     <div key={item.tipo}>
                       <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-700 font-medium">{item.tipo}</span>
-                        <span className="text-gray-500">{item._count.tipo} ({pct}%)</span>
+                        <span className="text-slate-300 font-medium">{item.tipo}</span>
+                        <span className="text-slate-500">{item._count.tipo} ({pct}%)</span>
                       </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2">
+                      <div className="w-full bg-[#243D5E] rounded-full h-2">
                         <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
@@ -82,8 +82,8 @@ export default async function Dashboard() {
           )}
 
           {stats.porSucursal.filter((s: { sucursal: string | null }) => s.sucursal).length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Por sucursal</h2>
+            <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
+              <h2 className="text-lg font-semibold text-slate-100 mb-4">Por sucursal</h2>
               <div className="space-y-3">
                 {stats.porSucursal
                   .filter((s: { sucursal: string | null }) => s.sucursal)
@@ -92,10 +92,10 @@ export default async function Dashboard() {
                     return (
                       <div key={item.sucursal}>
                         <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-700 font-medium">{SUCURSAL_LABEL[item.sucursal!] ?? item.sucursal}</span>
-                          <span className="text-gray-500">{item._count.sucursal} ({pct}%)</span>
+                          <span className="text-slate-300 font-medium">{SUCURSAL_LABEL[item.sucursal!] ?? item.sucursal}</span>
+                          <span className="text-slate-500">{item._count.sucursal} ({pct}%)</span>
                         </div>
-                        <div className="w-full bg-gray-100 rounded-full h-2">
+                        <div className="w-full bg-[#243D5E] rounded-full h-2">
                           <div className="bg-purple-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
@@ -108,9 +108,9 @@ export default async function Dashboard() {
       )}
 
       {!stats && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 text-center text-yellow-800">
+        <div className="bg-amber-900/20 border border-amber-700/40 rounded-xl p-6 text-center text-amber-400">
           <p className="font-medium">Base de datos no conectada</p>
-          <p className="text-sm mt-1">Configurá la variable <code>DATABASE_URL</code> para ver los datos.</p>
+          <p className="text-sm mt-1 text-amber-500">Configurá la variable <code>DATABASE_URL</code> para ver los datos.</p>
         </div>
       )}
     </div>
