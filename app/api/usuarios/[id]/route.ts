@@ -12,6 +12,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     return NextResponse.json({ error: "No podés eliminar tu propio usuario" }, { status: 400 });
   }
 
+  const existe = await prisma.user.findUnique({ where: { id }, select: { id: true } });
+  if (!existe) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+
   await prisma.user.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }

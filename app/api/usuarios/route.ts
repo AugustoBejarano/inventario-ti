@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
   if (!body.email || !body.password || !body.name) {
     return NextResponse.json({ error: "Faltan campos requeridos" }, { status: 400 });
   }
+  if (typeof body.password !== "string" || body.password.length < 8) {
+    return NextResponse.json({ error: "La contraseña debe tener al menos 8 caracteres" }, { status: 400 });
+  }
 
   const hashedPassword = await bcrypt.hash(body.password, 12);
 

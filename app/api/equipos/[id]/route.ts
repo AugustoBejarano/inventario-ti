@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { requireAdmin } from "@/lib/session";
+import { requireAdmin, requireAuth } from "@/lib/session";
 import { registrarAuditoria } from "@/lib/auditoria";
+
+const ESTADOS_VALIDOS    = ["ACTIVO", "EN_REPARACION", "DADO_DE_BAJA"];
+const SUCURSALES_VALIDAS = ["CORDOBA", "MONTE_MAIZ", "BUENOS_AIRES"];
 
 const CAMPOS_LABEL: Record<string, string> = {
   tipo: "Tipo", marca: "Marca", modelo: "Modelo", numeroSerie: "N° Serie",
@@ -10,6 +13,9 @@ const CAMPOS_LABEL: Record<string, string> = {
 };
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { error } = await requireAuth();
+  if (error) return error;
+
   const { id } = await params;
   const equipo = await prisma.equipo.findUnique({
     where: { id },
@@ -28,6 +34,16 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params;
   const body = await request.json();
+
+  if (!body.tipo) {
+    return NextResponse.json({ error: "El tipo es obligatorio" }, { status: 400 });
+  }
+  if (body.estado && !ESTADOS_VALIDOS.includes(body.estado)) {
+    return NextResponse.json({ error: "Estado inválido" }, { status: 400 });
+  }
+  if (body.sucursal && !SUCURSALES_VALIDAS.includes(body.sucursal)) {
+    return NextResponse.json({ error: "Sucursal inválida" }, { status: 400 });
+  }
 
   const anterior = await prisma.equipo.findUnique({ where: { id } });
   if (!anterior) return NextResponse.json({ error: "No encontrado" }, { status: 404 });

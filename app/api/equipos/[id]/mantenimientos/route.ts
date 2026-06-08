@@ -10,14 +10,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const { id } = await params;
   const body = await request.json();
 
+  const costoRaw = body.costo ? parseFloat(body.costo) : null;
+  const costo = costoRaw !== null && !isNaN(costoRaw) && costoRaw >= 0 ? costoRaw : null;
+
+  const fechaRaw = body.fecha ? new Date(body.fecha) : new Date();
+  const fecha = isNaN(fechaRaw.getTime()) ? new Date() : fechaRaw;
+
   const mantenimiento = await prisma.mantenimiento.create({
     data: {
       equipoId: id,
       tipo: body.tipo,
       descripcion: body.descripcion,
       tecnico: body.tecnico || null,
-      costo: body.costo ? parseFloat(body.costo) : null,
-      fecha: body.fecha ? new Date(body.fecha) : new Date(),
+      costo,
+      fecha,
     },
   });
 

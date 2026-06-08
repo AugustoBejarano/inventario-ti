@@ -12,3 +12,11 @@ export async function requireAdmin() {
   }
   return { session, error: null };
 }
+
+export async function requireAuth() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return { session: null, error: NextResponse.json({ error: "No autorizado" }, { status: 401 }) };
+  }
+  return { session, error: null };
+}

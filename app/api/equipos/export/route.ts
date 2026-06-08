@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import * as XLSX from "xlsx";
 import { Estado, Sucursal } from "@prisma/client";
+import { requireAuth } from "@/lib/session";
 
 const ESTADO_LABEL: Record<string, string> = {
   ACTIVO: "Activo", EN_REPARACION: "En reparación", DADO_DE_BAJA: "Dado de baja",
@@ -10,29 +11,35 @@ const SUCURSAL_LABEL: Record<string, string> = {
   CORDOBA: "Córdoba", MONTE_MAIZ: "Monte Maíz", BUENOS_AIRES: "Buenos Aires",
 };
 
+const ESTADOS_VALIDOS   = ["ACTIVO", "EN_REPARACION", "DADO_DE_BAJA"];
+const SUCURSALES_VALIDAS = ["CORDOBA", "MONTE_MAIZ", "BUENOS_AIRES"];
+
 export async function GET(request: NextRequest) {
+  const { error } = await requireAuth();
+  if (error) return error;
+
   const { searchParams } = new URL(request.url);
   const sucursal = searchParams.get("sucursal");
-  const estado = searchParams.get("estado");
+  const estado   = searchParams.get("estado");
 
   const equipos = await prisma.equipo.findMany({
     where: {
-      ...(sucursal && { sucursal: sucursal as Sucursal }),
-      ...(estado && { estado: estado as Estado }),
+      ...(sucursal && SUCURSALES_VALIDAS.includes(sucursal) && { sucursal: sucursal as Sucursal }),
+      ...(estado   && ESTADOS_VALIDOS.includes(estado)      && { estado:   estado   as Estado   }),
     },
     orderBy: [{ sucursal: "asc" }, { tipo: "asc" }],
   });
 
   const filas = equipos.map((e) => ({
-    Tipo: e.tipo,
-    Marca: e.marca ?? "",
-    Modelo: e.modelo ?? "",
-    "N° Serie": e.numeroSerie ?? "",
-    Usuario: e.usuarioAsignado ?? "",
-    Ubicación: e.ubicacion ?? "",
-    Sucursal: e.sucursal ? (SUCURSAL_LABEL[e.sucursal] ?? e.sucursal) : "",
-    Estado: ESTADO_LABEL[e.estado] ?? e.estado,
-    Notas: e.notas ?? "",
+    Tipo:           e.tipo,
+    Marca:          e.marca          ?? "",
+    Modelo:         e.modelo         ?? "",
+    "N° Serie":     e.numeroSerie    ?? "",
+    Usuario:        e.usuarioAsignado ?? "",
+    Ubicación:      e.ubicacion      ?? "",
+    Sucursal:       e.sucursal ? (SUCURSAL_LABEL[e.sucursal] ?? e.sucursal) : "",
+    Estado:         ESTADO_LABEL[e.estado] ?? e.estado,
+    Notas:          e.notas          ?? "",
     "Fecha de carga": new Date(e.creadoEn).toLocaleDateString("es-AR"),
   }));
 
