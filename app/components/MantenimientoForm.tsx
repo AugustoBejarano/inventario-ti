@@ -10,16 +10,27 @@ interface Props {
   onCancelar: () => void;
 }
 
+const labelStyle: React.CSSProperties = {
+  display: "block",
+  fontFamily: "var(--font-mono)",
+  fontSize: "0.5625rem",
+  fontWeight: 600,
+  letterSpacing: "0.15em",
+  textTransform: "uppercase",
+  color: "#3D6080",
+  marginBottom: "0.375rem",
+};
+
 export default function MantenimientoForm({ equipoId, onGuardado, onCancelar }: Props) {
   const [form, setForm] = useState({
-    tipo: "",
+    tipo:        "",
     descripcion: "",
-    tecnico: "",
-    costo: "",
-    fecha: new Date().toISOString().slice(0, 10),
+    tecnico:     "",
+    costo:       "",
+    fecha:       new Date().toISOString().slice(0, 10),
   });
   const [guardando, setGuardando] = useState(false);
-  const [error, setError] = useState("");
+  const [error,     setError]     = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,53 +41,76 @@ export default function MantenimientoForm({ equipoId, onGuardado, onCancelar }: 
     if (!form.tipo || !form.descripcion) { setError("Tipo y descripción son obligatorios"); return; }
     setGuardando(true);
     setError("");
-
     const res = await fetch(`/api/equipos/${equipoId}/mantenimientos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
-
     if (res.ok) onGuardado();
     else { setError("Error al guardar"); setGuardando(false); }
   };
 
-  const label = "block text-sm font-medium text-slate-400 mb-1";
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-[#162035] border border-[#2E4D70] rounded-lg p-4">
-      <h3 className="font-medium text-slate-200">Registrar mantenimiento</h3>
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4"
+      style={{
+        background: "#06101C",
+        border: "1px solid #2A4A68",
+        borderRadius: "2px",
+        padding: "1rem",
+      }}
+    >
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.5625rem",
+          color: "#3D6080",
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          marginBottom: "0.75rem",
+        }}
+      >
+        ▸ Registrar mantenimiento
+      </div>
+
+      {error && (
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#EF4444" }}>{error}</p>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label className={label}>Tipo *</label>
+          <label style={labelStyle}>Tipo *</label>
           <select name="tipo" value={form.tipo} onChange={handleChange} className="input-field">
             <option value="">Seleccioná un tipo</option>
             {TIPOS_MANTENIMIENTO.map((t) => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div>
-          <label className={label}>Fecha</label>
+          <label style={labelStyle}>Fecha</label>
           <input type="date" name="fecha" value={form.fecha} onChange={handleChange} className="input-field" />
         </div>
         <div>
-          <label className={label}>Técnico</label>
+          <label style={labelStyle}>Técnico</label>
           <input name="tecnico" value={form.tecnico} onChange={handleChange} placeholder="Nombre del técnico" className="input-field" />
         </div>
         <div>
-          <label className={label}>Costo ($)</label>
+          <label style={labelStyle}>Costo ($)</label>
           <input type="number" name="costo" value={form.costo} onChange={handleChange} placeholder="0.00" className="input-field" min="0" step="0.01" />
         </div>
         <div className="sm:col-span-2">
-          <label className={label}>Descripción *</label>
+          <label style={labelStyle}>Descripción *</label>
           <textarea name="descripcion" value={form.descripcion} onChange={handleChange} rows={2} placeholder="Describí el trabajo realizado..." className="input-field resize-none" />
         </div>
       </div>
 
       <div className="flex gap-2">
-        <button type="submit" disabled={guardando} className="btn-primary">{guardando ? "Guardando..." : "Guardar"}</button>
-        <button type="button" onClick={onCancelar} className="btn-secondary">Cancelar</button>
+        <button type="submit" disabled={guardando} className="btn-primary">
+          {guardando ? "Guardando..." : "Guardar"}
+        </button>
+        <button type="button" onClick={onCancelar} className="btn-secondary">
+          Cancelar
+        </button>
       </div>
     </form>
   );

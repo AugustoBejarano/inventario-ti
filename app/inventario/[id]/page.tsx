@@ -17,16 +17,43 @@ interface Equipo {
   mantenimientos: Mantenimiento[]; historial: HistorialCambio[];
 }
 
-export default function FichaEquipoPage() {
-  const { id } = useParams<{ id: string }>();
-  const router = useRouter();
-  const { data: session } = useSession();
-  const esAdmin = session?.user?.role === "ADMIN";
+const sectionStyle: React.CSSProperties = {
+  background: "#0C1D33",
+  border: "1px solid #1D344E",
+  borderRadius: "3px",
+  padding: "1.5rem",
+  boxShadow: "inset 0 1px 0 rgba(232,151,28,0.08)",
+};
 
-  const [equipo, setEquipo] = useState<Equipo | null>(null);
-  const [cargando, setCargando] = useState(true);
+const labelStyle: React.CSSProperties = {
+  fontFamily: "var(--font-mono)",
+  fontSize: "0.5625rem",
+  fontWeight: 600,
+  letterSpacing: "0.15em",
+  textTransform: "uppercase",
+  color: "#3D6080",
+  marginBottom: "0.25rem",
+};
+
+const sectionTitleStyle: React.CSSProperties = {
+  fontFamily: "var(--font-mono)",
+  fontSize: "0.5625rem",
+  color: "#3D6080",
+  letterSpacing: "0.18em",
+  textTransform: "uppercase",
+  marginBottom: "1rem",
+};
+
+export default function FichaEquipoPage() {
+  const { id }    = useParams<{ id: string }>();
+  const router    = useRouter();
+  const { data: session } = useSession();
+  const esAdmin   = session?.user?.role === "ADMIN";
+
+  const [equipo,          setEquipo]          = useState<Equipo | null>(null);
+  const [cargando,        setCargando]        = useState(true);
   const [mostrarFormMant, setMostrarFormMant] = useState(false);
-  const [eliminando, setEliminando] = useState(false);
+  const [eliminando,      setEliminando]      = useState(false);
 
   const cargar = useCallback(async () => {
     const res = await fetch(`/api/equipos/${id}`);
@@ -49,21 +76,34 @@ export default function FichaEquipoPage() {
     cargar();
   };
 
-  if (cargando) return <div className="text-center py-16 text-slate-500">Cargando...</div>;
-  if (!equipo) return <div className="text-center py-16 text-slate-400">Equipo no encontrado</div>;
+  if (cargando) {
+    return (
+      <div className="space-y-3 max-w-4xl pt-4">
+        {[...Array(3)].map((_, i) => <div key={i} className="skeleton h-32 w-full" />)}
+      </div>
+    );
+  }
+  if (!equipo) return (
+    <div className="text-center py-16" style={{ fontFamily: "var(--font-mono)", color: "#3D6080" }}>
+      // equipo no encontrado
+    </div>
+  );
 
   const nombre = [equipo.marca, equipo.modelo].filter(Boolean).join(" ") || equipo.tipo;
 
   return (
-    <div className="max-w-4xl space-y-6">
+    <div className="max-w-4xl space-y-5 animate-in">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 text-sm text-slate-500 mb-1">
-            <Link href="/inventario" className="hover:text-slate-300">Inventario</Link>
-            <span>/</span>
-            <span className="text-slate-400">{nombre}</span>
+          <div className="flex items-center gap-1.5 mb-2" style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem" }}>
+            <Link href="/inventario" className="text-[#3D6080] hover:text-[#6A9AB8] transition-colors">
+              Inventario
+            </Link>
+            <span style={{ color: "#1D344E" }}>/</span>
+            <span style={{ color: "#6A9AB8" }}>{nombre}</span>
           </div>
-          <h1 className="text-2xl font-bold text-slate-100">{nombre}</h1>
+          <h1 className="text-2xl font-bold text-[#E8F4FF] tracking-tight">{nombre}</h1>
           <div className="flex items-center gap-2 mt-2">
             <EstadoBadge estado={equipo.estado} />
             <SucursalBadge sucursal={equipo.sucursal} />
@@ -72,71 +112,138 @@ export default function FichaEquipoPage() {
         {esAdmin && (
           <div className="flex gap-2 shrink-0">
             <Link href={`/inventario/${id}/editar`} className="btn-secondary">Editar</Link>
-            <button onClick={eliminar} disabled={eliminando}
-              className="inline-flex items-center justify-center rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-900/40 transition-colors disabled:opacity-50">
+            <button
+              onClick={eliminar}
+              disabled={eliminando}
+              className="btn-secondary"
+              style={{ borderColor: "rgba(239,68,68,0.35)", color: "#EF4444" }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "rgba(239,68,68,0.08)"; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; }}
+            >
               Eliminar
             </button>
           </div>
         )}
       </div>
 
-      <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
-        <h2 className="text-lg font-semibold text-slate-100 mb-4">Datos del equipo</h2>
+      {/* Datos del equipo */}
+      <div style={sectionStyle}>
+        <div style={sectionTitleStyle}>▸ Datos del equipo</div>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
-            { label: "Tipo", valor: equipo.tipo },
-            { label: "Marca", valor: equipo.marca },
-            { label: "Modelo", valor: equipo.modelo },
-            { label: "N° de serie", valor: equipo.numeroSerie },
-            { label: "Usuario asignado", valor: equipo.usuarioAsignado },
-            { label: "Ubicación", valor: equipo.ubicacion },
-          ].map(({ label, valor }) => (
+            { label: "Tipo",            valor: equipo.tipo },
+            { label: "Marca",           valor: equipo.marca },
+            { label: "Modelo",          valor: equipo.modelo },
+            { label: "N° de serie",     valor: equipo.numeroSerie, mono: true },
+            { label: "Usuario asignado",valor: equipo.usuarioAsignado },
+            { label: "Ubicación",       valor: equipo.ubicacion },
+          ].map(({ label, valor, mono }) => (
             <div key={label}>
-              <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</dt>
-              <dd className="mt-1 text-sm text-slate-200">{valor || <span className="text-slate-600">—</span>}</dd>
+              <dt style={labelStyle}>{label}</dt>
+              <dd
+                style={{
+                  fontSize: "0.875rem",
+                  color: valor ? "#A0C2D8" : "#2A4A68",
+                  fontFamily: mono ? "var(--font-mono)" : undefined,
+                  letterSpacing: mono ? "0.04em" : undefined,
+                }}
+              >
+                {valor || "—"}
+              </dd>
             </div>
           ))}
         </dl>
         {equipo.notas && (
-          <div className="mt-4 pt-4 border-t border-[#243D5E]">
-            <dt className="text-xs font-medium text-slate-500 uppercase tracking-wide">Notas</dt>
-            <dd className="mt-1 text-sm text-slate-300">{equipo.notas}</dd>
+          <div style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #1D344E" }}>
+            <dt style={labelStyle}>Notas</dt>
+            <dd className="text-sm text-[#A0C2D8] mt-0.5">{equipo.notas}</dd>
           </div>
         )}
-        <p className="mt-4 pt-4 border-t border-[#243D5E] text-xs text-slate-600">
+        <p
+          style={{ marginTop: "1rem", paddingTop: "1rem", borderTop: "1px solid #1D344E", fontFamily: "var(--font-mono)", fontSize: "0.5625rem", color: "#2A4A68", letterSpacing: "0.08em" }}
+        >
           Cargado el {new Date(equipo.creadoEn).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" })}
         </p>
       </div>
 
-      <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
+      {/* Mantenimientos */}
+      <div style={sectionStyle}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-slate-100">Mantenimientos ({equipo.mantenimientos.length})</h2>
+          <div style={sectionTitleStyle} className="mb-0">
+            ▸ Mantenimientos ({equipo.mantenimientos.length})
+          </div>
           {esAdmin && !mostrarFormMant && (
-            <button onClick={() => setMostrarFormMant(true)} className="btn-primary text-xs px-3 py-1.5">+ Registrar</button>
+            <button onClick={() => setMostrarFormMant(true)} className="btn-primary" style={{ padding: "0.25rem 0.75rem", fontSize: "0.625rem" }}>
+              + Registrar
+            </button>
           )}
         </div>
+
         {mostrarFormMant && (
           <div className="mb-4">
-            <MantenimientoForm equipoId={id} onGuardado={() => { setMostrarFormMant(false); cargar(); }} onCancelar={() => setMostrarFormMant(false)} />
+            <MantenimientoForm
+              equipoId={id}
+              onGuardado={() => { setMostrarFormMant(false); cargar(); }}
+              onCancelar={() => setMostrarFormMant(false)}
+            />
           </div>
         )}
+
         {equipo.mantenimientos.length === 0 ? (
-          <p className="text-slate-500 text-sm">Sin mantenimientos registrados.</p>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#2A4A68", letterSpacing: "0.08em" }}>
+            // sin mantenimientos registrados
+          </p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2">
             {equipo.mantenimientos.map((m) => (
-              <div key={m.id} className="flex items-start justify-between gap-4 p-3 bg-[#162035] rounded-lg border border-[#243D5E]">
+              <div
+                key={m.id}
+                className="flex items-start justify-between gap-4 p-3"
+                style={{ background: "#06101C", border: "1px solid #1D344E", borderRadius: "2px" }}
+              >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs font-medium bg-blue-900/50 text-blue-300 border border-blue-700/50 px-2 py-0.5 rounded-full">{m.tipo}</span>
-                    <span className="text-xs text-slate-500">{new Date(m.fecha).toLocaleDateString("es-AR")}</span>
-                    {m.tecnico && <span className="text-xs text-slate-500">· {m.tecnico}</span>}
-                    {m.costo != null && <span className="text-xs text-slate-500">· ${m.costo.toLocaleString("es-AR")}</span>}
+                    <span
+                      style={{
+                        display: "inline-block",
+                        padding: "0.125rem 0.5rem",
+                        background: "rgba(0,186,219,0.08)",
+                        border: "1px solid rgba(0,186,219,0.20)",
+                        borderRadius: "2px",
+                        fontFamily: "var(--font-mono)",
+                        fontSize: "0.5625rem",
+                        fontWeight: 600,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "#00BADB",
+                      }}
+                    >
+                      {m.tipo}
+                    </span>
+                    <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#3D6080" }}>
+                      {new Date(m.fecha).toLocaleDateString("es-AR")}
+                    </span>
+                    {m.tecnico && (
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#3D6080" }}>
+                        · {m.tecnico}
+                      </span>
+                    )}
+                    {m.costo != null && (
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#E8971C" }}>
+                        · ${m.costo.toLocaleString("es-AR")}
+                      </span>
+                    )}
                   </div>
-                  <p className="text-sm text-slate-300 mt-1">{m.descripcion}</p>
+                  <p className="text-sm text-[#A0C2D8] mt-1">{m.descripcion}</p>
                 </div>
                 {esAdmin && (
-                  <button onClick={() => eliminarMantenimiento(m.id)} className="text-red-400 hover:text-red-300 text-xs shrink-0">Eliminar</button>
+                  <button
+                    onClick={() => eliminarMantenimiento(m.id)}
+                    style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", color: "#EF4444", background: "none", border: "none", cursor: "pointer", flexShrink: 0 }}
+                    className="hover:text-[#FCA5A5] transition-colors"
+                  >
+                    Eliminar
+                  </button>
                 )}
               </div>
             ))}
@@ -144,19 +251,38 @@ export default function FichaEquipoPage() {
         )}
       </div>
 
+      {/* Historial */}
       {equipo.historial.length > 0 && (
-        <div className="bg-[#1A2D47] rounded-xl border border-[#243D5E] p-6">
-          <h2 className="text-lg font-semibold text-slate-100 mb-4">Historial de cambios</h2>
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>▸ Historial de cambios</div>
           <div className="space-y-2">
             {equipo.historial.map((h) => (
-              <div key={h.id} className="flex items-start gap-3 text-sm">
-                <span className="text-slate-600 text-xs shrink-0 mt-0.5">
+              <div key={h.id} className="flex items-start gap-3">
+                <span
+                  style={{
+                    fontFamily: "var(--font-mono)",
+                    fontSize: "0.5625rem",
+                    color: "#2A4A68",
+                    flexShrink: 0,
+                    marginTop: "0.125rem",
+                    letterSpacing: "0.04em",
+                  }}
+                >
                   {new Date(h.creadoEn).toLocaleDateString("es-AR", { day: "2-digit", month: "short", year: "numeric" })}
                 </span>
-                <p className="text-slate-400">
-                  <span className="font-medium text-slate-300">{h.campo}</span>
-                  {h.valorAnterior && <> cambió de <span className="text-red-400">{h.valorAnterior || "vacío"}</span></>}
-                  {" "}a <span className="text-emerald-400">{h.valorNuevo || "vacío"}</span>
+                <p className="text-sm text-[#6A9AB8]">
+                  <span className="font-semibold text-[#A0C2D8]">{h.campo}</span>
+                  {h.valorAnterior && (
+                    <> cambió de{" "}
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.8em", color: "#EF4444" }}>
+                        {h.valorAnterior || "vacío"}
+                      </span>
+                    </>
+                  )}
+                  {" "}a{" "}
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.8em", color: "#22C55E" }}>
+                    {h.valorNuevo || "vacío"}
+                  </span>
                 </p>
               </div>
             ))}
